@@ -9,7 +9,7 @@ import (
 func main() {
 	println("App running.")
 
-	var graph = new(Graph)
+	var graph = new(DirectedGraph)
 
 	var nodeA = Node{Data: "A"}
 	var nodeB = Node{Data: "B"}
@@ -25,11 +25,13 @@ func main() {
 	graph.AddVertex(&nodeE)
 	graph.AddVertex(&nodeF)
 
-	graph.AddEdge(&nodeA, &nodeB)
-	graph.AddEdge(&nodeB, &nodeC)
-	graph.AddEdge(&nodeC, &nodeF)
-	graph.AddEdge(&nodeA, &nodeE)
-	graph.AddEdge(&nodeF, &nodeD)
+	graph.AddEdge(&nodeA, &nodeB, 10)
+	graph.AddEdge(&nodeB, &nodeC, 20)
+	graph.AddEdge(&nodeC, &nodeF, 30)
+	graph.AddEdge(&nodeA, &nodeE, 40)
+	graph.AddEdge(&nodeF, &nodeD, 50)
+
+	graph.ToString()
 
 	var nodes, _ = graph.DFS(&nodeA, nil)
 	for _, node := range nodes {
