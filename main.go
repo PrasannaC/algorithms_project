@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	. "graphs/Graph"
+	"graphs/MST"
 	. "graphs/Node"
 )
 
@@ -25,19 +26,28 @@ func main() {
 	graph.AddVertex(&nodeE)
 	graph.AddVertex(&nodeF)
 
-	graph.AddEdge(&nodeA, &nodeB, 10)
-	graph.AddEdge(&nodeB, &nodeC, 20)
-	graph.AddEdge(&nodeC, &nodeF, 30)
-	graph.AddEdge(&nodeA, &nodeE, 40)
-	graph.AddEdge(&nodeF, &nodeD, 50)
+	graph.AddEdge(&nodeA, &nodeB, 10, BIDIRECTIONAL)
+	graph.AddEdge(&nodeE, &nodeC, 20, BIDIRECTIONAL)
+	graph.AddEdge(&nodeA, &nodeE, 30, BIDIRECTIONAL)
+	graph.AddEdge(&nodeC, &nodeB, 40, BIDIRECTIONAL)
+	graph.AddEdge(&nodeA, &nodeF, 50, BIDIRECTIONAL)
+	graph.AddEdge(&nodeF, &nodeE, 60, BIDIRECTIONAL)
+	graph.AddEdge(&nodeE, &nodeD, 70, BIDIRECTIONAL)
+	graph.AddEdge(&nodeD, &nodeC, 80, BIDIRECTIONAL)
+	graph.AddEdge(&nodeB, &nodeE, 90, BIDIRECTIONAL)
 
-	graph.ToString()
+	fmt.Println(graph.ToString())
 
+	fmt.Println("DFS Sequence: ")
 	var nodes, _ = graph.DFS(&nodeA, nil)
 	for _, node := range nodes {
 		fmt.Printf("%v ", node.ToString())
 	}
 
 	var _, isPath = graph.DFS(&nodeB, &nodeE)
-	fmt.Println("\nPath from B to E: %v", isPath)
+	fmt.Printf("\n\nPath from B to E: %v\n\n", isPath)
+
+	fmt.Println("MST using DFS is: ")
+	mst := MST.KruskalDfs(graph)
+	fmt.Println(mst.ToString())
 }

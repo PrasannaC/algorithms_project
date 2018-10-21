@@ -5,23 +5,33 @@ import (
 	. "graphs/Node"
 )
 
+type EdgeType int32
+
+const (
+	UNIDIRECTIONAL = iota
+	BIDIRECTIONAL  = iota
+)
+
 type WeightedGraph struct {
-	Vertices []*Node
-	Edges    map[Node][]*Edge
+	Vertices Nodes
+	Edges    map[Node]Edges
 }
 
 func (g *WeightedGraph) AddVertex(node *Node) {
 	g.Vertices = append(g.Vertices, node)
 }
 
-func (g *WeightedGraph) AddEdge(u, v *Node, cost float64) {
+func (g *WeightedGraph) AddEdge(u, v *Node, cost float64, edgeType EdgeType) {
 	if g.Edges == nil {
-		g.Edges = make(map[Node][]*Edge)
+		g.Edges = make(map[Node]Edges)
 	}
-	g.Edges[*u] = append(g.Edges[*u], &Edge{To: v, Cost: cost})
+	g.Edges[*u] = append(g.Edges[*u], &Edge{From: u, To: v, Cost: cost})
+	if edgeType == BIDIRECTIONAL {
+		g.Edges[*v] = append(g.Edges[*v], &Edge{From: v, To: u, Cost: cost})
+	}
 }
 
-func (g *WeightedGraph) ToString() {
+func (g *WeightedGraph) ToString() string {
 	/*
 		Logic:
 			for every key in map
@@ -30,15 +40,16 @@ func (g *WeightedGraph) ToString() {
 		 			print the data
 				print newline
 	*/
-
+	s := ""
 	for i := 0; i < len(g.Edges); i++ {
-		fmt.Printf("%v ->", g.Vertices[i].ToString())
+		s += fmt.Sprintf("%v ->", g.Vertices[i].ToString())
 		var adjacentEdges = g.Edges[*g.Vertices[i]]
 		for j := 0; j < len(adjacentEdges); j++ {
-			fmt.Printf(" %v", adjacentEdges[j].To.ToString())
+			s += fmt.Sprintf(" %v", adjacentEdges[j].To.ToString())
 		}
-		fmt.Println("")
+		s += fmt.Sprintln("")
 	}
+	return s
 }
 
 /*
@@ -48,7 +59,7 @@ func (g *WeightedGraph) ToString() {
 	nodeToSearch -> Pointer to the node to which the path must be searched from srcNode.
 	Returns: Array of pointers to a node, boolean if nodeToSearch is visited.
 */
-func (g *WeightedGraph) DFS(srcNode *Node, nodeToSearch *Node) ([]*Node, bool) {
+func (g *WeightedGraph) DFS(srcNode *Node, nodeToSearch *Node) (Nodes, bool) {
 	/*
 		if sufficient data is available, go ahead, else return nil
 		visited <- Create an empty slice(list) to be filled with nodes in DFS order
@@ -61,7 +72,7 @@ func (g *WeightedGraph) DFS(srcNode *Node, nodeToSearch *Node) ([]*Node, bool) {
 		return nil, false
 	}
 
-	var returnList = make([]*Node, 0)
+	var returnList = make(Nodes, 0)
 	//
 	var visitedMap = make(map[Node]bool)
 	//
@@ -78,7 +89,7 @@ func (g *WeightedGraph) DFS(srcNode *Node, nodeToSearch *Node) ([]*Node, bool) {
 	nodeToSearch -> Pointer to the node to which the path must be searched from srcNode.
 	Returns: Boolean if nodeToSearch is visited.
 */
-func (g *WeightedGraph) recursiveDFS(srcNode *Node, visited *map[Node]bool, returnList *[]*Node, nodeToSearch *Node) bool {
+func (g *WeightedGraph) recursiveDFS(srcNode *Node, visited *map[Node]bool, returnList *Nodes, nodeToSearch *Node) bool {
 	/*
 		mark srcNode as visited
 		for every edge (srcNode <-> adjacentNode) do:
