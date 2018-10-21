@@ -9,7 +9,7 @@ import (
 func main() {
 	println("App running.")
 
-	var graph = new(DirectedGraph)
+	var graph = new(WeightedGraph)
 
 	var nodeA = Node{Data: "A"}
 	var nodeB = Node{Data: "B"}

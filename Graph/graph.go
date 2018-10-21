@@ -5,23 +5,23 @@ import (
 	. "graphs/Node"
 )
 
-type DirectedGraph struct {
+type WeightedGraph struct {
 	Vertices []*Node
 	Edges    map[Node][]*Edge
 }
 
-func (g *DirectedGraph) AddVertex(node *Node) {
+func (g *WeightedGraph) AddVertex(node *Node) {
 	g.Vertices = append(g.Vertices, node)
 }
 
-func (g *DirectedGraph) AddEdge(u, v *Node, cost float64) {
+func (g *WeightedGraph) AddEdge(u, v *Node, cost float64) {
 	if g.Edges == nil {
 		g.Edges = make(map[Node][]*Edge)
 	}
 	g.Edges[*u] = append(g.Edges[*u], &Edge{To: v, Cost: cost})
 }
 
-func (g *DirectedGraph) ToString() {
+func (g *WeightedGraph) ToString() {
 	/*
 		Logic:
 			for every key in map
@@ -48,7 +48,7 @@ func (g *DirectedGraph) ToString() {
 	nodeToSearch -> Pointer to the node to which the path must be searched from srcNode.
 	Returns: Array of pointers to a node, boolean if nodeToSearch is visited.
 */
-func (g *DirectedGraph) DFS(srcNode *Node, nodeToSearch *Node) ([]*Node, bool) {
+func (g *WeightedGraph) DFS(srcNode *Node, nodeToSearch *Node) ([]*Node, bool) {
 	/*
 		if sufficient data is available, go ahead, else return nil
 		visited <- Create an empty slice(list) to be filled with nodes in DFS order
@@ -78,7 +78,7 @@ func (g *DirectedGraph) DFS(srcNode *Node, nodeToSearch *Node) ([]*Node, bool) {
 	nodeToSearch -> Pointer to the node to which the path must be searched from srcNode.
 	Returns: Boolean if nodeToSearch is visited.
 */
-func (g *DirectedGraph) recursiveDFS(srcNode *Node, visited *map[Node]bool, returnList *[]*Node, nodeToSearch *Node) bool {
+func (g *WeightedGraph) recursiveDFS(srcNode *Node, visited *map[Node]bool, returnList *[]*Node, nodeToSearch *Node) bool {
 	/*
 		mark srcNode as visited
 		for every edge (srcNode <-> adjacentNode) do:
