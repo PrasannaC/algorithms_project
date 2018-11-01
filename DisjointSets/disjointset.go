@@ -1,7 +1,7 @@
 package DisjointSets
 
 import (
-	"disjoint_sets/DisjointSets/Set"
+	"graphs/DisjointSets/Set"
 )
 
 /*
