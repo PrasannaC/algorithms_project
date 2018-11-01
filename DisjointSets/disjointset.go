@@ -9,11 +9,30 @@ import (
 */
 type Sets map[interface{}]*Set.Set
 
+type UnionByType int32
+
+/*
+	Enum for UnionBy options
+*/
+const (
+	BY_RANK = iota
+	BY_SIZE = iota
+)
+
 /*
 	Structure for the disjoint set data structure instance
 */
 type DisjointSet struct {
-	setMap Sets
+	setMap  Sets
+	usePC   bool
+	unionBy UnionByType
+}
+
+/*
+	Factory method to create instance of disjoint set with given params
+*/
+func CreateDisjointSet(usePathCompression bool, unionBy UnionByType) *DisjointSet {
+	return &DisjointSet{usePC: usePathCompression, unionBy: unionBy}
 }
 
 /*
@@ -55,6 +74,9 @@ func (d *DisjointSet) Find(data interface{}) *Set.Set {
 		} else {
 			//recursively call find till you find root
 			root := d.Find(v.Parent.Data)
+			if d.usePC {
+				v.Parent = root
+			}
 			return root
 		}
 	}
@@ -90,10 +112,19 @@ func (d *DisjointSet) Union(v1, v2 interface{}) {
 	if root1 == root2 {
 		return
 	} else {
-		root2.Parent = root1
-		root1.Size++
-		if root1.Rank <= 1+root2.Rank {
-			root1.Rank = 1 + root2.Rank
+		if (d.unionBy == BY_RANK && root1.Rank < root2.Rank) ||
+			(d.unionBy == BY_SIZE && root1.Size < root2.Size) {
+			root1.Parent = root2
+			root2.Size += root1.Size
+			if root1.Rank == root2.Rank {
+				root2.Rank++
+			}
+		} else {
+			root2.Parent = root1
+			root1.Size += root2.Size
+			if root2.Rank == root1.Rank {
+				root1.Rank++
+			}
 		}
 	}
 }

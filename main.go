@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"graphs/DisjointSets"
 	. "graphs/Graph"
 	"graphs/MST"
 	. "graphs/Node"
@@ -50,4 +51,9 @@ func main() {
 	fmt.Println("MST using DFS is: ")
 	mst := MST.KruskalDfs(graph)
 	fmt.Println(mst.ToString())
+
+	d := DisjointSets.CreateDisjointSet(true, DisjointSets.BY_SIZE)
+	d.MakeSet(10)
+	d.MakeSet(20)
+	d.Union(10, 20)
 }
