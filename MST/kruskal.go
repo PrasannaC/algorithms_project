@@ -1,6 +1,7 @@
 package MST
 
 import (
+	"graphs/DisjointSets"
 	. "graphs/Graph"
 	. "graphs/Node"
 	"sort"
@@ -44,6 +45,41 @@ func KruskalDfs(g *WeightedGraph) *WeightedGraph {
 			var from = *(edge.From)
 			var to = *(edge.To)
 			MST.AddEdge(&from, &to, edge.Cost, BIDIRECTIONAL)
+		}
+	}
+	return &MST
+}
+
+func KruskalUnionFind(g *WeightedGraph, usePathCompression bool, unionBy DisjointSets.UnionByType) *WeightedGraph {
+
+	if g == nil {
+		return nil
+	}
+	MST := WeightedGraph{}
+	disjointSet := DisjointSets.CreateDisjointSet(usePathCompression, unionBy)
+	for _, node := range g.Vertices {
+		//not adding by reference. just to keep MST and graph as disjoint
+		var copyNode = *node
+		MST.AddVertex(&copyNode)
+		disjointSet.MakeSet(copyNode)
+	}
+	var edgesList = make(Edges, 0)
+	for _, value := range g.Edges {
+		for _, edge := range value {
+			edgesList = append(edgesList, edge)
+		}
+	}
+	sort.Sort(edgesList)
+	for _, edge := range edgesList {
+
+		var from = *(edge.From)
+		var to = *(edge.To)
+		var fromRoot = disjointSet.Find(from)
+		var toRoot = disjointSet.Find(to)
+
+		if fromRoot != toRoot {
+			MST.AddEdge(&from, &to, edge.Cost, BIDIRECTIONAL)
+			disjointSet.Union(from, to)
 		}
 	}
 	return &MST

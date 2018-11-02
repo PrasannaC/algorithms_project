@@ -51,6 +51,9 @@ func main() {
 	fmt.Println("MST using DFS is: ")
 	mst := MST.KruskalDfs(graph)
 	fmt.Println(mst.ToString())
+	fmt.Println("MST using Union Find is: ")
+	mst = MST.KruskalUnionFind(graph, false, DisjointSets.BY_RANK)
+	fmt.Println(mst.ToString())
 
 	d := DisjointSets.CreateDisjointSet(true, DisjointSets.BY_SIZE)
 	d.MakeSet(10)
