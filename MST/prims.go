@@ -4,43 +4,52 @@ import (
 	"container/heap"
 	"graphs/Graph"
 	"graphs/Node"
-	"math"
 )
 
-func Prims(graph *Graph.WeightedGraph) *Graph.WeightedGraph {
-
-	queue := make(PriorityQueue, 0)
+/*
+	Returns the minimum spanning tree for a graph
+	using Prim's algorithm.
+	graph -> Pointer to the instance of the input graph.
+*/
+func Prim(graph *Graph.WeightedGraph) *Graph.WeightedGraph {
+	queue := make(PriorityQueue, len(graph.Vertices))
+	vertexPQMap := make(map[*Node.Node]*PQItem, 0)
 	count := 0
 	MST := Graph.WeightedGraph{}
 	//assign priorities to every vertex.
-	for _, vertex := range graph.Vertices {
+	for i, vertex := range graph.Vertices {
 		MST.AddVertex(vertex)
+		var item PQItem
 		if count == 0 {
-			item := PQItem{value: vertex, priority: 0.0}
-			heap.Push(&queue, &item)
+			item = PQItem{value: *vertex, priority: float64(0)}
+			queue[i] = &item
 			count++
 		} else {
-			item := PQItem{value: vertex, priority: math.Inf(1)}
-			heap.Push(&queue, &item)
+			item = PQItem{value: *vertex, priority: float64(999999999)}
+			queue[i] = &item
 		}
+		queue[i].Index = i
+		vertexPQMap[vertex] = &item
 	}
-	visited := make(map[*Node.Node]bool, 0)
-	weights := make(map[*Node.Node]float64, 0)
-	parent := make(map[*Node.Node]*Node.Node, 0)
 	heap.Init(&queue)
+
+	visited := make(map[Node.Node]bool, 0)
+	parent := make(map[*Node.Node]*Node.Node, 0)
+
 	for queue.Len() > 0 {
-		minVertexItem := queue.Pop().(*PQItem).value
-		for _, edge := range graph.Edges[*minVertexItem] {
+		minVertexItem := queue.Pop().(*PQItem)
+		visited[minVertexItem.value] = true
+		for _, edge := range graph.Edges[minVertexItem.value] {
 			u := edge.From
 			v := edge.To
-			if _, ok := visited[v]; !ok {
-				visited[v] = true
-				weights[v] = edge.Cost
+			if isVisited, _ := visited[*v]; !isVisited {
+				visited[*v] = true
+				queue.update(vertexPQMap[v], vertexPQMap[v].value, edge.Cost)
 				parent[v] = u
 			} else {
 				//node is visited.
-				if weights[v] > edge.Cost {
-					weights[v] = edge.Cost
+				if parent[u] != v && vertexPQMap[v].priority > edge.Cost {
+					queue.update(vertexPQMap[v], vertexPQMap[v].value, edge.Cost)
 					parent[v] = u
 				}
 			}
@@ -49,7 +58,7 @@ func Prims(graph *Graph.WeightedGraph) *Graph.WeightedGraph {
 
 	//make mst edges
 	for key, value := range parent {
-		MST.AddEdge(value, key, weights[value], Graph.BIDIRECTIONAL)
+		MST.AddEdge(value, key, vertexPQMap[value].priority, Graph.BIDIRECTIONAL)
 	}
 	return &MST
 }

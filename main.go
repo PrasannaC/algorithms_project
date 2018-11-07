@@ -60,7 +60,7 @@ func main() {
 	d.MakeSet(20)
 	d.Union(10, 20)
 
-	fmt.Println("MST using Prims is: ")
-	mst = MST.Prims(graph)
+	fmt.Println("MST using Prim is: ")
+	mst = MST.Prim(graph)
 	fmt.Println(mst.ToString())
 }
