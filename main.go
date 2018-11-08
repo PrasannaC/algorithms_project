@@ -12,12 +12,6 @@ import (
 	"strings"
 )
 
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-
 func main() {
 	arguments := os.Args
 	graph := CreateGraphFromArguments(arguments)

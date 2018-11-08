@@ -13,7 +13,7 @@ import (
 */
 func Prim(graph *Graph.WeightedGraph) *Graph.WeightedGraph {
 	queue := make(PriorityQueue, len(graph.Vertices))
-	vertexPQMap := make(map[*Node.Node]*PQItem, 0)
+	vertexPQMap := make(map[Node.Node]*PQItem, 0)
 	count := 0
 	MST := Graph.WeightedGraph{}
 	//assign priorities to every vertex.
@@ -29,7 +29,7 @@ func Prim(graph *Graph.WeightedGraph) *Graph.WeightedGraph {
 			queue[i] = &item
 		}
 		queue[i].Index = i
-		vertexPQMap[vertex] = &item
+		vertexPQMap[*vertex] = &item
 	}
 	heap.Init(&queue)
 
@@ -44,12 +44,12 @@ func Prim(graph *Graph.WeightedGraph) *Graph.WeightedGraph {
 			v := edge.To
 			if isVisited, _ := visited[*v]; !isVisited {
 				visited[*v] = true
-				queue.update(vertexPQMap[v], vertexPQMap[v].value, edge.Cost)
+				queue.update(vertexPQMap[*v], vertexPQMap[*v].value, edge.Cost)
 				parent[v] = u
 			} else {
 				//node is visited.
-				if parent[u] != v && vertexPQMap[v].priority > edge.Cost {
-					queue.update(vertexPQMap[v], vertexPQMap[v].value, edge.Cost)
+				if parent[u] != v && vertexPQMap[*v].priority > edge.Cost {
+					queue.update(vertexPQMap[*v], vertexPQMap[*v].value, edge.Cost)
 					parent[v] = u
 				}
 			}
@@ -58,7 +58,7 @@ func Prim(graph *Graph.WeightedGraph) *Graph.WeightedGraph {
 
 	//make mst edges
 	for key, value := range parent {
-		MST.AddEdge(value, key, vertexPQMap[value].priority, Graph.BIDIRECTIONAL)
+		MST.AddEdge(value, key, vertexPQMap[*value].priority, Graph.BIDIRECTIONAL)
 	}
 	return &MST
 }
