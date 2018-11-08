@@ -3,51 +3,24 @@ package main
 import (
 	"fmt"
 	"graphs/DisjointSets"
-	. "graphs/Graph"
+	"graphs/FileUtils"
+	"graphs/Graph"
 	"graphs/MST"
-	. "graphs/Node"
+	"graphs/Node"
+	"os"
+	"strconv"
+	"strings"
 )
 
-func main() {
-	println("App running.")
-
-	var graph = new(WeightedGraph)
-
-	var nodeA = Node{Data: "A"}
-	var nodeB = Node{Data: "B"}
-	var nodeC = Node{Data: "C"}
-	var nodeD = Node{Data: "D"}
-	var nodeE = Node{Data: "E"}
-	var nodeF = Node{Data: "F"}
-
-	graph.AddVertex(&nodeA)
-	graph.AddVertex(&nodeB)
-	graph.AddVertex(&nodeC)
-	graph.AddVertex(&nodeD)
-	graph.AddVertex(&nodeE)
-	graph.AddVertex(&nodeF)
-
-	graph.AddEdge(&nodeA, &nodeB, 10, BIDIRECTIONAL)
-	graph.AddEdge(&nodeE, &nodeC, 20, BIDIRECTIONAL)
-	graph.AddEdge(&nodeA, &nodeE, 30, BIDIRECTIONAL)
-	graph.AddEdge(&nodeC, &nodeB, 40, BIDIRECTIONAL)
-	graph.AddEdge(&nodeA, &nodeF, 50, BIDIRECTIONAL)
-	graph.AddEdge(&nodeF, &nodeE, 60, BIDIRECTIONAL)
-	graph.AddEdge(&nodeE, &nodeD, 70, BIDIRECTIONAL)
-	graph.AddEdge(&nodeD, &nodeC, 80, BIDIRECTIONAL)
-	graph.AddEdge(&nodeB, &nodeE, 90, BIDIRECTIONAL)
-
-	fmt.Println(graph.ToString())
-
-	fmt.Println("DFS Sequence: ")
-	var nodes, _ = graph.DFS(&nodeA, nil)
-	for _, node := range nodes {
-		fmt.Printf("%v ", node.ToString())
+func check(e error) {
+	if e != nil {
+		panic(e)
 	}
+}
 
-	var _, isPath = graph.DFS(&nodeB, &nodeE)
-	fmt.Printf("\n\nPath from B to E: %v\n\n", isPath)
-
+func main() {
+	arguments := os.Args
+	graph := CreateGraphFromArguments(arguments)
 	fmt.Println("MST using DFS is: ")
 	mst := MST.KruskalDfs(graph)
 	fmt.Println(mst.ToString())
@@ -63,4 +36,61 @@ func main() {
 	fmt.Println("MST using Prim is: ")
 	mst = MST.Prim(graph)
 	fmt.Println(mst.ToString())
+}
+
+func ParseArguments(args []string) string {
+	inputFilePath := ""
+
+	for i, element := range args {
+		if element == "-i" || element == "-I" {
+			if i == len(args)-1 {
+				fmt.Println("file path is not given as next argument")
+			} else {
+				return args[i+1]
+			}
+		}
+	}
+
+	return inputFilePath
+}
+
+func CreateGraphFromArguments(arguments []string) *Graph.WeightedGraph {
+	inputFile := ParseArguments(arguments)
+	data := FileUtils.ReadFile(inputFile)
+	nodeMap := make(map[interface{}]Node.Node, 0)
+	var graph = new(Graph.WeightedGraph)
+
+	for _, line := range data {
+		lineArr := strings.Split(line, " ")
+		fromData := lineArr[0]
+		toData := lineArr[1]
+		cost := lineArr[2]
+		var node1 Node.Node
+		var node2 Node.Node
+		node, ok := nodeMap[fromData]
+		if !ok {
+			node1 = Node.Node{Data: fromData}
+			nodeMap[fromData] = node1
+			graph.AddVertex(&node1)
+		} else {
+			node1 = node
+		}
+
+		node, ok = nodeMap[toData]
+		if !ok {
+			node2 = Node.Node{Data: toData}
+			nodeMap[toData] = node2
+			graph.AddVertex(&node2)
+		} else {
+			node2 = node
+		}
+
+		costVal, err := strconv.ParseFloat(cost, 64)
+		if err != nil {
+			panic(err)
+		}
+		graph.AddEdge(&node1, &node2, costVal, Graph.BIDIRECTIONAL)
+	}
+
+	return graph
 }
