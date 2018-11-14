@@ -13,7 +13,7 @@ import (
 	DFS to check for cycles.
 	g -> Pointer to the instance of the input graph.
 */
-func KruskalDfs(graph *WeightedGraph) *WeightedGraph {
+func KruskalDfs(graph *WeightedGraph) (*WeightedGraph, float64) {
 	/*
 		MST <- Initialize empty MST with graph.Vertices and {} Edges
 		sortedEdges <- Sort Edges in order of increasing Cost
@@ -23,7 +23,7 @@ func KruskalDfs(graph *WeightedGraph) *WeightedGraph {
 		return MST
 	*/
 	if graph == nil {
-		return nil
+		return nil, float64(0)
 	}
 	MST := WeightedGraph{}
 	for _, node := range graph.Vertices {
@@ -39,15 +39,17 @@ func KruskalDfs(graph *WeightedGraph) *WeightedGraph {
 		}
 	}
 	sort.Sort(edgesList)
+	totalCost := float64(0)
 	for _, edge := range edgesList {
 		if _, ok := MST.DFS(edge.From, edge.To); !ok {
 			//copying to not add by reference
 			var from = *(edge.From)
 			var to = *(edge.To)
 			MST.AddEdge(&from, &to, edge.Cost, BIDIRECTIONAL)
+			totalCost += edge.Cost
 		}
 	}
-	return &MST
+	return &MST, totalCost
 }
 
 /*
@@ -56,10 +58,10 @@ func KruskalDfs(graph *WeightedGraph) *WeightedGraph {
 	disjoint sets to check for cycles.
 	g -> Pointer to the instance of the input graph.
 */
-func KruskalUnionFind(graph *WeightedGraph, usePathCompression bool, unionBy DisjointSets.UnionByType) *WeightedGraph {
+func KruskalUnionFind(graph *WeightedGraph, usePathCompression bool, unionBy DisjointSets.UnionByType) (*WeightedGraph, float64) {
 
 	if graph == nil {
-		return nil
+		return nil, float64(0)
 	}
 	MST := WeightedGraph{}
 	disjointSet := DisjointSets.CreateDisjointSet(usePathCompression, unionBy)
@@ -76,6 +78,8 @@ func KruskalUnionFind(graph *WeightedGraph, usePathCompression bool, unionBy Dis
 		}
 	}
 	sort.Sort(edgesList)
+
+	totalCost := float64(0)
 	for _, edge := range edgesList {
 
 		var from = *(edge.From)
@@ -86,7 +90,8 @@ func KruskalUnionFind(graph *WeightedGraph, usePathCompression bool, unionBy Dis
 		if fromRoot != toRoot {
 			MST.AddEdge(&from, &to, edge.Cost, BIDIRECTIONAL)
 			disjointSet.Union(from, to)
+			totalCost += edge.Cost
 		}
 	}
-	return &MST
+	return &MST, totalCost
 }

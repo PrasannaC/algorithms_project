@@ -10,26 +10,31 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func main() {
 	arguments := os.Args
 	graph := CreateGraphFromArguments(arguments)
 	fmt.Println("MST using DFS is: ")
-	mst := MST.KruskalDfs(graph)
-	fmt.Println(mst.ToString())
+	start := time.Now()
+	_, cost := MST.KruskalDfs(graph)
+	elapsed := time.Since(start)
+	fmt.Printf("Total Cost: %v\nTime taken: %v\n", cost, elapsed)
+	//fmt.Println(mst.ToString())
 	fmt.Println("MST using Union Find is: ")
-	mst = MST.KruskalUnionFind(graph, false, DisjointSets.BY_RANK)
-	fmt.Println(mst.ToString())
-
-	d := DisjointSets.CreateDisjointSet(true, DisjointSets.BY_SIZE)
-	d.MakeSet(10)
-	d.MakeSet(20)
-	d.Union(10, 20)
+	start = time.Now()
+	_, cost = MST.KruskalUnionFind(graph, false, DisjointSets.BY_RANK)
+	elapsed = time.Since(start)
+	fmt.Printf("Total Cost: %v\nTime taken: %v\n", cost, elapsed)
+	//fmt.Println(mst.ToString())
 
 	fmt.Println("MST using Prim is: ")
-	mst = MST.Prim(graph)
-	fmt.Println(mst.ToString())
+	start = time.Now()
+	_, cost = MST.Prim(graph)
+	elapsed = time.Since(start)
+	fmt.Printf("Total Cost: %v\nTime taken: %v\n", cost, elapsed)
+	//fmt.Println(mst.ToString())
 }
 
 func ParseArguments(args []string) string {
@@ -56,6 +61,9 @@ func CreateGraphFromArguments(arguments []string) *Graph.WeightedGraph {
 
 	for _, line := range data {
 		lineArr := strings.Split(line, " ")
+		if len(lineArr) != 3 {
+			continue
+		}
 		fromData := lineArr[0]
 		toData := lineArr[1]
 		cost := lineArr[2]

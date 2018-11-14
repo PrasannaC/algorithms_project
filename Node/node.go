@@ -30,3 +30,11 @@ func (e Edges) Swap(i, j int) {
 func (e Edges) Less(i, j int) bool {
 	return (e)[i].Cost < (e)[j].Cost
 }
+
+// An PQItem is something we store in a priority queue.
+type PQItem struct {
+	Value    Node    // The value of the item; arbitrary.
+	Priority float64 // The priority of the item in the queue.
+	// The index is needed by update and is maintained by the heap.Interface methods.
+	Index int // The index of the item in the heap.
+}
