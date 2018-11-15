@@ -8,7 +8,6 @@ import (
 	"graphs/MST"
 	"graphs/Node"
 	"os"
-	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -138,9 +137,9 @@ func Run(arguments []string) {
 		//os.Exit(0)
 	}
 
-	arr := strings.Split(inputFile, "\\")
+	arr := strings.Split(inputFile, "/")
 	t := arr[len(arr)-1]
-	file, err := os.Create(path.Join("C:\\Users\\choul", outputFileName+t))
+	file, err := os.Create(outputFileName + t)
 	if err != nil {
 		panic(err)
 	}
