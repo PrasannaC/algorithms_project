@@ -3,6 +3,7 @@ package Graph
 import (
 	"fmt"
 	. "graphs/Node"
+	"sort"
 )
 
 type EdgeType int32
@@ -41,6 +42,12 @@ func (g *WeightedGraph) FindCost(u, v Node) float64 {
 		}
 	}
 	return 0.0
+}
+
+func (g *WeightedGraph) SortEdges() {
+	for _, val := range g.Edges {
+		sort.Sort(val)
+	}
 }
 
 func (g *WeightedGraph) ToString() string {

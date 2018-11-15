@@ -19,10 +19,12 @@ func main() {
 	Run(arguments)
 }
 
-func ParseArguments(args []string) (string, string, bool) {
+func ParseArguments(args []string) (string, string, bool, bool) {
 	inputFilePath := ""
 	mstType := ""
 	enablePC := false
+	sortedPrim := false
+
 	for i, element := range args {
 		if element == "-i" || element == "-I" {
 			if i == len(args)-1 {
@@ -43,14 +45,17 @@ func ParseArguments(args []string) (string, string, bool) {
 		if element == "--path-compression" || element == "-PC" {
 			enablePC = true
 		}
+		if element == "--sorted" || element == "-S" {
+			sortedPrim = true
+		}
 
 	}
 
-	return inputFilePath, mstType, enablePC
+	return inputFilePath, mstType, enablePC, sortedPrim
 }
 
 func Run(arguments []string) {
-	inputFile, mstType, enablePC := ParseArguments(arguments)
+	inputFile, mstType, enablePC, sortedPrim := ParseArguments(arguments)
 	data := FileUtils.ReadFile(inputFile)
 	nodeMap := make(map[interface{}]Node.Node, 0)
 	var graph = new(Graph.WeightedGraph)
@@ -89,6 +94,11 @@ func Run(arguments []string) {
 		}
 		graph.AddEdge(&node1, &node2, costVal, Graph.BIDIRECTIONAL)
 	}
+
+	if sortedPrim {
+		graph.SortEdges()
+	}
+
 	var output string
 	var outputFileName string
 	switch mstType {
@@ -110,7 +120,11 @@ func Run(arguments []string) {
 
 		break
 	case "PRIM":
-		outputFileName = mstType + "_"
+		var sorted_name = "UNSORTED"
+		if sortedPrim {
+			sorted_name = "SORTED"
+		}
+		outputFileName = mstType + "_" + sorted_name + "_"
 		output = fmt.Sprintf("MST using Prim is: \n")
 		start := time.Now()
 		_, cost := MST.Prim(graph)
