@@ -13,8 +13,9 @@ const (
 )
 
 type WeightedGraph struct {
-	Vertices Nodes
-	Edges    map[Node]Edges
+	Vertices  Nodes
+	Edges     map[Node]Edges
+	TotalCost float64
 }
 
 func (g *WeightedGraph) AddVertex(node *Node) {
@@ -29,6 +30,17 @@ func (g *WeightedGraph) AddEdge(u, v *Node, cost float64, edgeType EdgeType) {
 	if edgeType == BIDIRECTIONAL {
 		g.Edges[*v] = append(g.Edges[*v], &Edge{From: v, To: u, Cost: cost})
 	}
+	g.TotalCost += cost
+}
+
+func (g *WeightedGraph) FindCost(u, v Node) float64 {
+	edges := g.Edges[u]
+	for _, val := range edges {
+		if val.To.Data == v.Data {
+			return val.Cost
+		}
+	}
+	return 0.0
 }
 
 func (g *WeightedGraph) ToString() string {
