@@ -131,10 +131,12 @@ func Run(arguments []string) {
 		output = fmt.Sprintf("Total Cost: %v\nTime taken: %v\n", cost, elapsed)
 		break
 	default:
-		mst, _ := MST.KruskalUnionFind(graph, false, DisjointSets.BY_RANK)
-		Graph.Preorder(graph, mst)
-		//fmt.Println("Check program args.")
-		//os.Exit(0)
+		outputFileName = "TSP_PRIM_"
+		start := time.Now()
+		mst, _ := MST.Prim(graph)
+		_, cost := Graph.TSP(graph, mst)
+		elapsed := time.Since(start)
+		output = fmt.Sprintf("Total Cost: %v\nTime taken: %v\n", cost, elapsed)
 	}
 
 	arr := strings.Split(inputFile, "/")
