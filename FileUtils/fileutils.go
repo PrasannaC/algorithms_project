@@ -11,5 +11,5 @@ func ReadFile(path string) []string {
 		panic(err)
 	}
 	stringData := string(data[:])
-	return strings.Split(stringData, "\r\n")
+	return strings.Split(stringData, "\n")
 }

@@ -6,15 +6,16 @@ import (
 )
 
 func Preorder(graph, mst *WeightedGraph) {
-	sourceNode := graph.Vertices[0]
-	sourceNodeEdges := graph.Edges[*sourceNode]
+	sourceNode := mst.Vertices[0]
+	sourceNodeEdges := mst.Edges[*sourceNode]
 	var visitedMap = make(map[Node.Node]bool)
 	var tspCycle = new(WeightedGraph)
 	var list = make([]Node.Node, 0)
+	mst.SortEdges()
 	recursivePreorder(mst, &list, sourceNode, nil, sourceNodeEdges, &visitedMap)
-	//for _, v := range list {
-	//	fmt.Println(v.Data)
-	//}
+	for _, v := range list {
+		fmt.Println(v.Data)
+	}
 
 	for i, j := 0, 1; j < len(list); {
 		u, v := list[i], list[j]
@@ -30,7 +31,7 @@ func Preorder(graph, mst *WeightedGraph) {
 	u, v := list[0], list[len(list)-1]
 	cost := graph.FindCost(u, v)
 	tspCycle.AddEdge(&u, &v, cost, BIDIRECTIONAL)
-	fmt.Println(tspCycle.ToString())
+	//fmt.Println(tspCycle.ToString())
 	fmt.Printf("TSP cost: %v", tspCycle.TotalCost)
 }
 
